@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "ghcr.io/dongminl/test:${params.VERSION}"
+    }
+
+    stages {
+        stage ('Git clone') {
+            steps {
+                git branch: 'main', credentialsId: 'github-access-token',
+                url: 'https://github.com/DongminL/ci-cd-practice.git'
+            }
+        }
+
+        stage ('Gradle Build') {
+            steps {
+                sh '''
+                    chmod +x gradlew
+                    ./gradlew clean bootJar
+                '''
+            }
+        }
+
+        stage ('Docker Image Build') {
+            steps {
+                sh '''
+                    docker build -t test .
+                    docker tag test ${DOCKER_IMAGE}
+                    echo $CR_PAT | docker login ghcr.io - u ${GITHUB_ID} --password-stdin
+                    docker push ${DOCKER_IMAGE}
+                '''
+            }
+        }
+
+        stage ('Deploy') {
+            steps {
+                sshagent(['ssh-server']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP}
+                        echo $CR_PAT | docker login ghcr.io - u ${GITHUB_ID} --password-stdin
+
+                        docker pull ${DOCKER_IMAGE}
+
+                        docker stop test || true
+                        docker rm test || true
+
+                        docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}
+                    '''
+                }
+            }
+        }
+    }
+}
