@@ -26,9 +26,12 @@ pipeline {
         stage ('Docker Image Build') {
             steps {
                 sh '''
+                    docker rmi -f test:latest || true
+
                     docker build -t test .
                     docker tag test ${DOCKER_IMAGE}
-                    echo $CR_PAT | docker login ghcr.io - u ${GITHUB_ID} --password-stdin
+
+                    echo \$CR_PAT | docker login ghcr.io -u ${GITHUB_ID} --password-stdin
                     docker push ${DOCKER_IMAGE}
                 '''
             }
@@ -38,15 +41,16 @@ pipeline {
             steps {
                 sshagent(['ssh']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP}
-                        echo $CR_PAT | docker login ghcr.io - u ${GITHUB_ID} --password-stdin
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} '
+                            echo \$CR_PAT | docker login ghcr.io -u ${GITHUB_ID} --password-stdin
 
-                        docker pull ${DOCKER_IMAGE}
+                            docker pull ${DOCKER_IMAGE}
 
-                        docker stop test || true
-                        docker rm test || true
+                            docker stop test || true
+                            docker rm test || true
 
-                        docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}
+                            docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}
+                        '
                     '''
                 }
             }
