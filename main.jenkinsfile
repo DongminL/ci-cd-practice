@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         VERSION = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-        DOCKER_IMAGE = "ghcr.io/dongminl/test:${VERSION}"
+        DOCKER_IMAGE = "${DOCKER_REGISTRY}/test:${VERSION}"
     }
 
     stages {
@@ -26,12 +26,14 @@ pipeline {
         stage ('Docker Image Build') {
             steps {
                 sh '''
-                    docker rmi -f test:latest || true
+                    docker rmi -f \$(docker images -q) || true
 
                     docker build -t test .
                     docker tag test ${DOCKER_IMAGE}
 
+                    export CR_PAT=${GITHUB_TOKEN}
                     echo \$CR_PAT | docker login ghcr.io -u ${GITHUB_ID} --password-stdin
+
                     docker push ${DOCKER_IMAGE}
                 '''
             }
@@ -39,18 +41,18 @@ pipeline {
 
         stage ('Deploy') {
             steps {
-                sshagent(['ssh']) {
+                sshagent (['ssh']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} '
-                            echo \$CR_PAT | docker login ghcr.io -u ${GITHUB_ID} --password-stdin
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker login ghcr.io -u ${GITHUB_ID} --password ${GITHUB_TOKEN}"
 
-                            docker pull ${DOCKER_IMAGE}
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker pull ${DOCKER_IMAGE}"
 
-                            docker stop test || true
-                            docker rm test || true
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker stop test || true"
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker rm test || true"
 
-                            docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}
-                        '
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}"
+
+                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker system prune -a -f || true"
                     '''
                 }
             }
