@@ -26,6 +26,8 @@ pipeline {
         stage ('Docker Image Build') {
             steps {
                 sh '''
+                    docker rmi -f test:latest || true
+
                     docker build -t test .
                     docker tag test ${DOCKER_IMAGE}
 
