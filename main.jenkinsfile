@@ -28,7 +28,8 @@ pipeline {
                 sh '''
                     docker build -t test .
                     docker tag test ${DOCKER_IMAGE}
-                    echo $CR_PAT | docker login ghcr.io - u ${GITHUB_ID} --password-stdin
+
+                    echo $CR_PAT | docker login ghcr.io -u ${GITHUB_ID} --password-stdin
                     docker push ${DOCKER_IMAGE}
                 '''
             }
@@ -39,7 +40,7 @@ pipeline {
                 sshagent(['ssh']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP}
-                        echo $CR_PAT | docker login ghcr.io - u ${GITHUB_ID} --password-stdin
+                        echo \$CR_PAT | docker login ghcr.io -u ${GITHUB_ID} --password-stdin
 
                         docker pull ${DOCKER_IMAGE}
 
