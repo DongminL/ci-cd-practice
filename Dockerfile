@@ -8,4 +8,4 @@ WORKDIR /app
 COPY /build/libs/cicd-0.0.1-SNAPSHOT.jar /app/cicd-0.0.1-SNAPSHOT.jar
 
 # jar 파일 실행
-ENTRYPOINT ["java", "-jar", "/app/cicd-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/canchem.jar"]
