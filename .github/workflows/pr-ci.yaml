@@ -23,7 +23,8 @@ jobs:
           java-version: '17'
 
       - name: Gradle 명령 실행 권한 부여
-        run: chmod +x gradlew
+        run: chmod +x ./gradlew
+        shell: bash
 
       - name: Gradle로 프로젝트 Build
         run: ./gradlew build
