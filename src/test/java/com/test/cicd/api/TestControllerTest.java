@@ -36,6 +36,6 @@ class TestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string("No Hello"));
+                .andExpect(content().string("Hello"));
     }
 }
