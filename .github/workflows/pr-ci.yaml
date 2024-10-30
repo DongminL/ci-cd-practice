@@ -35,7 +35,7 @@ jobs:
         with:
           distribution: 'oracle'
           java-version: '17'
-          cache: 'gradle'
+          cache: 'jdk'
 
       - name: Gradle 명령 실행 권한 부여
         run: chmod +x ./gradlew
