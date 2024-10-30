@@ -25,6 +25,17 @@ jobs:
         with:
           distribution: 'oracle'
           java-version: '17'
+          cache: 'gradle'
+
+      - name: Gradle 종속성 캐시
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+              ${{ runner.os }}-gradle
 
       - name: Gradle 명령 실행 권한 부여
         run: chmod +x ./gradlew
