@@ -1,3 +1,9 @@
 spring:
   application:
     name: cicd
+
+  lifecycle:
+    timeout-per-shutdown-phase: 10s # Graceful Shutdown 시, 시간 제한 (10초 후 종료)
+
+server:
+  shutdown: graceful  # Graceful Shutdown 설정
