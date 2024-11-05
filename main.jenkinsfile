@@ -26,8 +26,6 @@ pipeline {
         stage ('Docker Image Build') {
             steps {
                 sh '''
-                    docker rmi -f \$(docker images -q) || true
-
                     docker build -t test .
                     docker tag test ${DOCKER_IMAGE}
 
@@ -35,6 +33,8 @@ pipeline {
                     echo \$CR_PAT | docker login ghcr.io -u ${GITHUB_ID} --password-stdin
 
                     docker push ${DOCKER_IMAGE}
+
+                    docker rmi -f ${DOCKER_IMAGE}
                 '''
             }
         }
