@@ -41,18 +41,18 @@ pipeline {
 
         stage ('Deploy') {
             steps {
-                sshagent (['ssh']) {
+                sshagent (credentials: ['ssh']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker login ghcr.io -u ${GITHUB_ID} --password ${GITHUB_TOKEN}"
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker login ghcr.io -u ${GITHUB_ID} --password ${GITHUB_TOKEN}"
 
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker pull ${DOCKER_IMAGE}"
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker pull ${DOCKER_IMAGE}"
 
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker stop test || true"
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker rm test || true"
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker stop test || true"
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker rm test || true"
 
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}"
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}"
 
-                        ssh -o StrictHostKeyChecking=no ec2-user@${API_SERVER_IP} "docker system prune -a -f || true"
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker system prune -a -f || true"
                     '''
                 }
             }
