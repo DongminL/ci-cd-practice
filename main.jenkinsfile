@@ -9,8 +9,11 @@ pipeline {
     stages {
         stage ('Git clone') {
             steps {
-                git branch: 'main', credentialsId: 'github-access-token',
-                url: 'https://github.com/DongminL/ci-cd-practice.git'
+                checkout scmGit(
+                    branches: [[name: 'main']],
+                    extensions: [submodule(parentCredentials: true, trackingSubmodules: true)],
+                    userRemoteConfigs: [[credentialsId: 'github-access-token', url: 'https://github.com/DongminL/ci-cd-practice.git']]
+                )
             }
         }
 
