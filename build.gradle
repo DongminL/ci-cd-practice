@@ -34,3 +34,12 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+/* deploy 서브 모듈에 있는 config 파일들을 resources로 복사 */
+task copyYaml(type: Copy) {
+    copy {
+        from './deploy/config'
+        include '*.yaml'
+        into 'src/main/resources'
+    }
+}
