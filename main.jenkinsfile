@@ -50,10 +50,7 @@ pipeline {
 
                         ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker pull ${DOCKER_IMAGE}"
 
-                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker stop test || true"
-                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker rm test || true"
-
-                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker run -d --name test -p 8080:8080 ${DOCKER_IMAGE}"
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "sudo sh deploy/script/deploy.docker.sh"
 
                         ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker system prune -a -f || true"
                     '''
