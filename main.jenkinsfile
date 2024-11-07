@@ -11,8 +11,8 @@ pipeline {
             steps {
                 checkout scmGit(
                     branches: [[name: 'main']],
-                    extensions: [submodule(parentCredentials: true, trackingSubmodules: true)],
-                    userRemoteConfigs: [[credentialsId: 'github-access-token', url: 'https://github.com/DongminL/ci-cd-practice.git']]
+                    extensions: [submodule(parentCredentials: true, recursiveSubmodules: true, reference: '', trackingSubmodules: true)],
+                    userRemoteConfigs: [[credentialsId: 'github-id', url: 'https://github.com/DongminL/ci-cd-practice.git']]
                 )
             }
         }
