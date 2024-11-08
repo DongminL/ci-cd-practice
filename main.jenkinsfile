@@ -43,11 +43,10 @@ pipeline {
         }
 
         stage ('Deploy') {
-            stage ('Deploy') {
-                steps {
-                    sshagent (credentials: ['ssh']) {
-                        sh '''
-                            ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker login ghcr.io -u ${GITHUB_ID} --password ${GITHUB_TOKEN}"
+            steps {
+                sshagent (credentials: ['ssh']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker login ghcr.io -u ${GITHUB_ID} --password ${GITHUB_TOKEN}"
 
                             ssh -t ${API_SERVER_USER}@${API_SERVER_IP} "docker pull ${DOCKER_IMAGE}"
 
