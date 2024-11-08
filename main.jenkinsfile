@@ -53,8 +53,7 @@ pipeline {
                             ssh -t ${API_SERVER_USER}@${API_SERVER_IP} "echo 'DOCKER_IMAGE=${DOCKER_IMAGE}' > ${SUBMODULE_REPOSITORY}/docker/.env && sudo sh ${SUBMODULE_REPOSITORY}/script/deploy.sh"
 
                             ssh -t ${API_SERVER_USER}@${API_SERVER_IP} "docker system prune -a -f || true"
-                        '''
-                    }
+                    '''
                 }
             }
         }
