@@ -24,9 +24,17 @@ repositories {
 }
 
 dependencies {
+    // Monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Junit5
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
