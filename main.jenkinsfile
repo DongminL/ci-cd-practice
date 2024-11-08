@@ -43,17 +43,19 @@ pipeline {
         }
 
         stage ('Deploy') {
-            steps {
-                sshagent (credentials: ['ssh']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker login ghcr.io -u ${GITHUB_ID} --password ${GITHUB_TOKEN}"
+            stage ('Deploy') {
+                steps {
+                    sshagent (credentials: ['ssh']) {
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker login ghcr.io -u ${GITHUB_ID} --password ${GITHUB_TOKEN}"
 
-                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker pull ${DOCKER_IMAGE}"
+                            ssh -t ${API_SERVER_USER}@${API_SERVER_IP} "docker pull ${DOCKER_IMAGE}"
 
-                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "sudo sh deploy/script/deploy.docker.sh"
+                            ssh -t ${API_SERVER_USER}@${API_SERVER_IP} "echo 'DOCKER_IMAGE=${DOCKER_IMAGE}' > ${SUBMODULE_REPOSITORY}/docker/.env && sudo sh ${SUBMODULE_REPOSITORY}/script/deploy.sh"
 
-                        ssh -o StrictHostKeyChecking=no ${API_SERVER_USER}@${API_SERVER_IP} "docker system prune -a -f || true"
-                    '''
+                            ssh -t ${API_SERVER_USER}@${API_SERVER_IP} "docker system prune -a -f || true"
+                        '''
+                    }
                 }
             }
         }
