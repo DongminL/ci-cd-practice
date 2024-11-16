@@ -36,5 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-### application*.yml ###
+### application*.yaml ###
 src/main/resources/*.yaml
+
+### docker ###
+Dockerfile

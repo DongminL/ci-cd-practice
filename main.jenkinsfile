@@ -29,7 +29,7 @@ pipeline {
         stage ('Docker Image Build') {
             steps {
                 sh '''
-                    docker build -t test .
+                    docker build -t test -f deploy/docker/Dockerfile .
                     docker tag test ${DOCKER_IMAGE}
 
                     export CR_PAT=${GITHUB_TOKEN}
